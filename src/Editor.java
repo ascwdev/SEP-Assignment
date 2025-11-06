@@ -1,10 +1,9 @@
-
-import java.awt.Color;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
  * This class is the main processing class of the Fotoshop application. 
@@ -58,7 +57,7 @@ public class Editor {
         boolean finished = false;
         while (!finished) {
             Command command = parser.getCommand();
-            finished = processCommand(command);
+            command.execute(this);
         }
         System.out.println("Thank you for using Fotoshop.  Good bye.");
         System.exit(0);
@@ -90,50 +89,54 @@ public class Editor {
         System.out.println();
     }
 
-    /**
-     * Given a command, edit (that is: execute) the command.
-     *
-     * @param command The command to be processed.
-     * @return true If the command ends the editing session, false otherwise.
-     */
-    private boolean processCommand(Command command) {
-        boolean wantToQuit = false;
-
-        if (command.isUnknown()) {
-            System.out.println("I don't know what you mean...");
-            return false;
-        }
-
-        String commandWord = command.getCommandWord();
-        if (commandWord == "help") {
-            printHelp();
-        } else if (commandWord.equals("open")) {
-            open(command);
-        } else if (commandWord.equals("save")) {
-            save(command);
-        } else if (commandWord.equals("mono")) {
-            mono(command);
-        } else if (commandWord.equals("rot90")) {
-            rot90(command);
-        } else if (commandWord.equals("look")) {
-            look(command);
-        } else if (commandWord.equals("script")) {
-            wantToQuit = script(command);
-        } else if (commandWord.equals("quit")) {
-            wantToQuit = quit(command);
-        }
-        return wantToQuit;
-    }
+//    /**
+//     * Given a command, edit (that is: execute) the command.
+//     *
+//     * @param command The command to be processed.
+//     * @return true If the command ends the editing session, false otherwise.
+//     */
+//    private boolean processCommand(Command command) {
+//        boolean wantToQuit = false;
+//
+//        if (command.isUnknown()) {
+//            System.out.println("I don't know what you mean...");
+//            return false;
+//        }
+//
+//        String commandWord = command.getCommandWord();
+//        if (commandWord == "help") {
+//            printHelp();
+//        } else if (commandWord.equals("open")) {
+//            open(command);
+//        } else if (commandWord.equals("save")) {
+//            save(command);
+//        } else if (commandWord.equals("mono")) {
+//            mono(command);
+//        } else if (commandWord.equals("rot90")) {
+//            rot90(command);
+//        } else if (commandWord.equals("look")) {
+//            look(command);
+//        } else if (commandWord.equals("script")) {
+//            wantToQuit = script(command);
+//        } else if (commandWord.equals("quit")) {
+//            wantToQuit = quit(command);
+//        }
+//        return wantToQuit;
+//    }
 
 //----------------------------------
 // Implementations of user commands:
 //----------------------------------
-    
+
+    public void nullCommand() {
+        System.out.println("I don't know what you mean...");
+    }
+
     /**
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
      */
-    private void printHelp() {
+    public void printHelp() {
         System.out.println("You are using Fotoshop.");
         System.out.println();
         System.out.println("Your command words are:");
@@ -142,10 +145,11 @@ public class Editor {
 
     /**
      * Load an image from a file.
+     *
      * @param name The name of the image file
      * @return a ColorImage containing the image
      */
-    private ColorImage loadImage(String name) {
+    ColorImage loadImage(String name) {
         ColorImage img = null;
         try {
             img = new ColorImage(ImageIO.read(new File(name)));
@@ -159,16 +163,17 @@ public class Editor {
 
     /**
      * "open" was entered. Open the file given as the second word of the command
-     * and use as the current image. 
+     * and use as the current image.
+     *
      * @param command the command given.
      */
-    private void open(Command command) {
+    public void open(Command command) {
         if (!command.hasSecondWord()) {
             // if there is no second word, we don't know what to open...
             System.out.println("open what?");
-            return ;
+            return;
         }
-  
+
         String inputName = command.getSecondWord();
         ColorImage img = loadImage(inputName);
         if (img == null) {
@@ -185,11 +190,12 @@ public class Editor {
     }
 
     /**
-     * "save" was entered. Save the current image to the file given as the 
-     * second word of the command. 
+     * "save" was entered. Save the current image to the file given as the
+     * second word of the command.
+     *
      * @param command the command given
      */
-    private void save(Command command) {
+    public void save(Command command) {
         if (currentImage == null) {
             printHelp();
             return;
@@ -197,9 +203,9 @@ public class Editor {
         if (!command.hasSecondWord()) {
             // if there is no second word, we don't know where to save...
             System.out.println("save where?");
-            return ;
+            return;
         }
-  
+
         String outputName = command.getSecondWord();
         try {
             File outputFile = new File(outputName);
@@ -210,13 +216,13 @@ public class Editor {
             printHelp();
         }
     }
-    
+
     /**
      * Check the status of the application 
      * -1 is a fatal error
      * 0 is status as normal
      * 1 system is terminating
-     * 
+     *
      *
      */
 //    void checkStatus(int statusCode) {
@@ -227,10 +233,9 @@ public class Editor {
 //    }
 
     /**
-     * "look" was entered. Report the status of the work bench. 
-     * @param command the command given.
+     * "look" was entered. Report the status of the work bench.
      */
-    private void look(Command command) {
+    public void look() {
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
         if (filter1 != null) {
@@ -249,25 +254,24 @@ public class Editor {
     }
 
     /**
-     * "mono" was entered. Convert the current image to monochrome. 
-     * @param command the command given.
+     * "mono" was entered. Convert the current image to monochrome.
      */
-    private void mono(Command command) {
+    public void mono() {
         if (filter4 != null) {
             System.out.println("Filter pipeline exceeded");
             return;
         }
-        
+
         ColorImage tmpImage = new ColorImage(currentImage);
         //Graphics2D g2 = currentImage.createGraphics();
         int height = tmpImage.getHeight();
         int width = tmpImage.getWidth();
-        for (int y=0; y<height; y++) {
-            for (int x=0; x<width; x++) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 Color pix = tmpImage.getPixel(x, y);
-                int lum = (int) Math.round(0.299*pix.getRed()
-                                         + 0.587*pix.getGreen()
-                                         + 0.114*pix.getBlue());
+                int lum = (int) Math.round(0.299 * pix.getRed()
+                        + 0.587 * pix.getGreen()
+                        + 0.114 * pix.getBlue());
                 tmpImage.setPixel(x, y, new Color(lum, lum, lum));
             }
         }
@@ -281,29 +285,28 @@ public class Editor {
             filter3 = "mono";
         } else if (filter4 == null) {
             filter4 = "mono";
-        } 
+        }
     }
-    
+
     /**
-     * "rot90" was entered. Rotate the current image 90 degrees. 
-     * @param command the command given.
+     * "rot90" was entered. Rotate the current image 90 degrees.
      */
-    private void rot90(Command command) {
+    public void rot90() {
         if (filter4 != null) {
             System.out.println("Filter pipeline exceeded");
             return;
         }
-        
+
         // R90 = [0 -1, 1 0] rotates around origin
         // (x,y) -> (-y,x)
         // then transate -> (height-y, x)
         int height = currentImage.getHeight();
         int width = currentImage.getWidth();
         ColorImage rotImage = new ColorImage(height, width);
-        for (int y=0; y<height; y++) { // in the rotated image
-            for (int x=0; x<width; x++) {
-                Color pix = currentImage.getPixel(x,y);
-                rotImage.setPixel(height-y-1,x, pix);
+        for (int y = 0; y < height; y++) { // in the rotated image
+            for (int x = 0; x < width; x++) {
+                Color pix = currentImage.getPixel(x, y);
+                rotImage.setPixel(height - y - 1, x, pix);
             }
         }
         currentImage = rotImage;
@@ -317,24 +320,24 @@ public class Editor {
             filter4 = "flipH";
         }
     }
-    
+
     /**
      * The 'script' command runs a sequence of commands from a
      * text file.
-     * 
+     * <p>
      * IT IS IMPORTANT THAT THIS COMMAND WORKS AS IT CAN BE USED FOR QUICKLY TESTING
-     * 
-     * @param command the script command, second word of which is the name of 
-     * the script file.
+     *
+     * @param command the script command, second word of which is the name of
+     *                the script file.
      * @return whether to quit.
      */
-    private boolean script(Command command) {
+    public boolean script(Command command) {
         if (!command.hasSecondWord()) {
             // if there is no second word, we don't know what to open...
-            System.out.println("which script"); 
+            System.out.println("which script");
             return false;
         }
-  
+
         String scriptName = command.getSecondWord();
         Parser scriptParser = new Parser();
         try (FileInputStream inputStream = new FileInputStream(scriptName)) {
@@ -343,29 +346,28 @@ public class Editor {
             while (!finished) {
                 try {
                     Command cmd = scriptParser.getCommand();
-                    finished = processCommand(cmd);
+//                    finished = processCommand(cmd);
                 } catch (Exception ex) {
                     return finished;
-                }               
+                }
             }
             return finished;
-        } 
-        catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             System.out.println("Cannot find " + scriptName);
             return false;
-        }
-        catch (IOException ex) {
-            throw new RuntimeException("Panic: script barfed!"); //NOPMD - suppressed AvoidThrowingRawExceptionTypes - TODO explain reason for suppression
+        } catch (IOException ex) {
+            throw new RuntimeException("Panic: script barfed!");
         }
     }
-    
+
     /**
      * "Quit" was entered. Check the rest of the command to see whether we
      * really quit the editor.
+     *
      * @param command the command given.
      * @return true, if this command quits the editor, false otherwise.
      */
-    private boolean quit(Command command) {
+    public boolean quit(Command command) {
         if (command.hasSecondWord()) {
             System.out.println("Quit what?");
             return false;
@@ -373,4 +375,5 @@ public class Editor {
             return true;  // signal that we want to quit
         }
     }
+
 }

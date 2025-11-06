@@ -1,33 +1,16 @@
-public class Command
+public abstract class Command
 {
-    private String commandWord;
     private String secondWord;
     private String thirdWord;
 
     /**
-     * Create a command object. First and second word must be supplied, but
-     * either one (or both) can be null.
-     * @param firstWord The first word of the command. Null if the command
-     *                  was not recognised.
-     * @param secondWord The second word of the command.
-     * @param thirdWord The second word of the command.
+     * Create a command object. The constructor sets both subcommands
+     * (secondWord & thirdWord) to null by default.
      */
-    public Command(String firstWord, String secondWord, String thirdWord)
+    public Command()
     {
-        commandWord = firstWord;
-        this.secondWord = secondWord;
-        this.thirdWord = secondWord;
-        // Test
-    }
-
-    /**
-     * Return the command word (the first word) of this command. If the
-     * command was not understood, the result is null.
-     * @return The command word.
-     */
-    public String getCommandWord()
-    {
-        return commandWord;
+        this.secondWord = null;
+        this.thirdWord = null;
     }
 
     /**
@@ -45,16 +28,22 @@ public class Command
      */
     public String getThirdWord()
     {
-        return secondWord;
+        return thirdWord;
     }
-    
+
+
     /**
-     * @return true if this command was not understood.
+     * Sets the second word to the desired input parameter.
+     * @param word The desired input to store as the second word.
      */
-    public boolean isUnknown()
-    {
-        return (commandWord == null);
-    }
+    public void setSecondWord(String word) { this.secondWord = word; }
+
+    /**
+     * Sets the third word to the desired input parameter.
+     * @param word The desired input to store as the third word.
+     */
+    public void setThirdWord(String word) { this.thirdWord = word; }
+
 
     /**
      * @return true if the command has a second word.
@@ -71,5 +60,7 @@ public class Command
     {
         return (thirdWord != null);
     }
+
+    public abstract void execute(Editor editor);
 }
 

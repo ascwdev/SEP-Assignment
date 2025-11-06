@@ -41,13 +41,27 @@ public class Parser
             }
         }
 
+        Command command = commands.get(word1);
+
+        if(!commands.isCommand(word1)) {
+            command = commands.get(null);
+        }
+
+        if(command != null) {
+            command.setSecondWord(word2);
+            command.setThirdWord(word3);
+        }
+
+        return command;
+
         // Now check whether this word is known. If so, create a command
         // with it. If not, create a "null" command (for unknown command).
-        if(commands.isCommand(word1)) {
-            return new Command(word1, word2, word3);
-        }
-        else {
-            return new Command(null, word2, word3); 
-        }
+//        if(commands.isCommand(word1)) {
+//            return new Command(word1, word2, word3);
+//        }
+//        else {
+//            return new Command(null, word2, word3);
+//        }
+
     }
 }
