@@ -17,7 +17,7 @@ public class Command
         commandWord = firstWord;
         this.secondWord = secondWord;
         this.thirdWord = secondWord;
-
+        // Test
     }
 
     /**

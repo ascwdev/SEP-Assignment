@@ -355,7 +355,7 @@ public class Editor {
             return false;
         }
         catch (IOException ex) {
-            throw new RuntimeException("Panic: script barfed!");
+            throw new RuntimeException("Panic: script barfed!"); //NOPMD - suppressed AvoidThrowingRawExceptionTypes - TODO explain reason for suppression
         }
     }
     
